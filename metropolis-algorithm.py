@@ -13,12 +13,15 @@
 #     name: python3
 # ---
 
+# +
 import math
 import scipy.stats
+
 import numpy as np
 import pandas
 from collections import defaultdict
 import matplotlib.pylab as plt
+# -
 
 df = list(pandas.read_csv("poverty.csv").itertuples(index=False))
 
