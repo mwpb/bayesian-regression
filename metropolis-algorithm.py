@@ -16,11 +16,11 @@
 import math
 import scipy.stats
 import numpy as np
-import pandas
+import pandas as pd
 from collections import defaultdict
 import matplotlib.pylab as plt
 
-df = pandas.read_csv("poverty.csv")
+df = pd.read_csv("poverty.csv")
 
 df.columns
 
@@ -80,6 +80,7 @@ class MetropolisRegression:
     def plot_mean(self):
         lists = sorted(self.freqs['mean'].items())
         x, y = zip(*lists)
+        plt.xlim = (1.5, 1.7)
         plt.plot(x, y)
         plt.show()
         
@@ -98,15 +99,18 @@ class MetropolisRegression:
 
 m = MetropolisRegression(df['PovPct'], df['Brth15to17'], scipy.stats.norm)
 
-m.run(30)
+m.run(200)
 
-m.plot_mean()
+m.plot_intercept()
 
+df.plot(kind='scatter', x = 'PovPct', y = 'Brth15to17')
 
+import statsmodels.api as sm
 
-
-
-
+X = sm.add_constant( df['PovPct'])
+model = sm.OLS(df['Brth15to17'],X)
+results = model.fit()
+print(results.summary())
 
 
 
