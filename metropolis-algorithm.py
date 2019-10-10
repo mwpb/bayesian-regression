@@ -34,12 +34,15 @@ class MetropolisRegression:
         'std':defaultdict(int)
     }
     
-    def __init__(self, X, y, residual_dist, mean=0, intercept=0, std=1):
+    def __init__(self, X, y, residual_dist, mean=0, intercept=0, std=1, movement = 0.5):
         self.mean, self.intercept, self.std = mean, intercept, std
         self.residual_dist = residual_dist
+        self.movement = movement
         self.X, self.y = X, y
         
     def probability(self, mean, intercept, std):
+        if std == 0:
+            return 0
         mean, intercept, std = round(mean, 1), round(intercept, 1), round(std, 1)
         if (mean, intercept, std) not in self.cache:
             p = 0
@@ -62,15 +65,15 @@ class MetropolisRegression:
         return False
     
     def next_sample(self):
-        new_mean = self.mean + np.random.normal(0, 0.1, 1)[0]
-        new_intercept = self.intercept + np.random.normal(0, 0.1, 1)[0]
-        new_std = max(0, self.std + np.random.normal(0, 0.1, 1)[0])
+        new_mean = self.mean + np.random.normal(0, self.movement, 1)[0]
+        new_intercept = self.intercept + np.random.normal(0, self.movement, 1)[0]
+        new_std = self.std + np.random.normal(0, self.movement, 1)[0]
         
         if self.should_accept(new_mean, new_intercept, new_std):
             self.mean, self.intercept, self.std = new_mean, new_intercept, new_std
         
         self.freqs['mean'][round(self.mean, 1)] += 1
-        self.freqs['intercept'][round(self.intercept,1)] += 1
+        self.freqs['intercept'][round(self.intercept, 1)] += 1
         self.freqs['std'][round(self.std, 1)] += 1
         
     def run(self, n):
@@ -97,11 +100,14 @@ class MetropolisRegression:
         plt.show()
 
 
-m = MetropolisRegression(df['PovPct'], df['Brth15to17'], scipy.stats.norm)
+m = MetropolisRegression(df['PovPct'], df['Brth15to17'], scipy.stats.norm, movement = 0.5)
 
-m.run(200)
+# %%time
+m.run(1000)
 
+m.plot_mean()
 m.plot_intercept()
+m.plot_std()
 
 df.plot(kind='scatter', x = 'PovPct', y = 'Brth15to17')
 
