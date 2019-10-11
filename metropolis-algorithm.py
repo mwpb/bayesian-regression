@@ -41,7 +41,7 @@ class MetropolisRegression:
         self.X, self.y = X, y
         
     def probability(self, mean, intercept, std):
-        if std == 0:
+        if std <= 0:
             return 0
         mean, intercept, std = round(mean, 1), round(intercept, 1), round(std, 1)
         if (mean, intercept, std) not in self.cache:
@@ -100,7 +100,10 @@ class MetropolisRegression:
         plt.show()
 
 
-m = MetropolisRegression(df['PovPct'], df['Brth15to17'], scipy.stats.norm, movement = 0.5)
+m = MetropolisRegression(
+    df['PovPct'], df['Brth15to17'], scipy.stats.norm, movement = 0.1,
+#     mean = 1.0, intercept = 4.0, std = 5.0
+)
 
 # %%time
 m.run(1000)
